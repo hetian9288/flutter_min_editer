@@ -9,7 +9,7 @@ class AtRichTextSpan extends RichTextWidget {
 
   final BuilderType type;
 	AtRichTextSpan(TextStyle textStyle, TapGestureRecognizer gestureRecognizer, {this.type, this.start})
-      : super(flag, " ", textStyle, gestureRecognizer: gestureRecognizer);
+      : super(flag, " ", textStyle);
 
   @override
   TextSpan finishText() {
@@ -18,7 +18,7 @@ class AtRichTextSpan extends RichTextWidget {
     final String atText = toString();
 
     if (type == BuilderType.extendedText)
-      return TextSpan(text: atText, style: textStyle, recognizer: gestureRecognizer);
+      return TextSpan(text: atText, style: textStyle);
 
     return RichTextSpan(
       text: atText,
@@ -26,7 +26,7 @@ class AtRichTextSpan extends RichTextWidget {
       start: start,
       style: textStyle,
       deleteAll: true,
-      recognizer: type == BuilderType.extendedText ? gestureRecognizer : null,
+      recognizer: type == BuilderType.extendedText ? null : null,
     );
   }
 }

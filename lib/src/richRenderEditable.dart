@@ -1100,49 +1100,49 @@ class RichRenderEditable extends RenderBox {
     var temp = convertTextInputSelectionToTextPainterSelection(text, selection);
 
     if (temp.isCollapsed) {
-			// TODO(mpcomplete): This doesn't work well at an RTL/LTR boundary.
+      // TODO(mpcomplete): This doesn't work well at an RTL/LTR boundary.
 //      final Offset caretOffset =
 //          _textPainter.getOffsetForCaret(temp.extent, _caretPrototype);
 
-			final Offset caretOffset = _getCaretOffset(
-							effectiveOffset,
-							TextPosition(offset: temp.extentOffset, affinity: selection.affinity),
-							TextPosition(
-											offset: selection.extentOffset, affinity: selection.affinity));
+      final Offset caretOffset = _getCaretOffset(
+        effectiveOffset,
+        TextPosition(
+          offset: temp.extentOffset,
+          affinity: selection.affinity,
+        ),
+        TextPosition(
+          offset: selection.extentOffset,
+          affinity: selection.affinity,
+        ),
+      );
 
-			final Offset start = Offset(0.0, preferredLineHeight) + caretOffset;
+      final Offset start = Offset(0.0, preferredLineHeight) + caretOffset;
 
-			return <TextSelectionPoint>[TextSelectionPoint(start, null)];
-		} else {
-			final Offset start = Offset(0.0, preferredLineHeight) +
-							_getCaretOffset(
-											effectiveOffset,
-											TextPosition(
-															offset: temp.baseOffset, affinity: selection.affinity),
-											TextPosition(
-															offset: selection.baseOffset, affinity: selection.affinity));
-			final Offset end = Offset(0.0, preferredLineHeight) +
-							_getCaretOffset(
-											effectiveOffset,
-											TextPosition(
-															offset: temp.extentOffset, affinity: selection.affinity),
-											TextPosition(
-															offset: selection.extentOffset,
-															affinity: selection.affinity));
+      return <TextSelectionPoint>[TextSelectionPoint(start, null)];
+    } else {
+      final Offset start = Offset(0.0, preferredLineHeight) +
+          _getCaretOffset(
+              effectiveOffset,
+              TextPosition(offset: temp.baseOffset, affinity: selection.affinity),
+              TextPosition(offset: selection.baseOffset, affinity: selection.affinity));
+      final Offset end = Offset(0.0, preferredLineHeight) +
+          _getCaretOffset(
+              effectiveOffset,
+              TextPosition(offset: temp.extentOffset, affinity: selection.affinity),
+              TextPosition(offset: selection.extentOffset, affinity: selection.affinity));
 
-			return <TextSelectionPoint>[
-				TextSelectionPoint(start, TextDirection.ltr),
-				TextSelectionPoint(end, TextDirection.ltr),
-			];
+      return <TextSelectionPoint>[
+        TextSelectionPoint(start, TextDirection.ltr),
+        TextSelectionPoint(end, TextDirection.ltr),
+      ];
     }
   }
 
-	Offset _getCaretOffset(Offset effectiveOffset, TextPosition textPosition,
-												 TextPosition textInputPosition) {
-
-		final Offset caretOffset = _textPainter.getOffsetForCaret(textPosition, _caretPrototype) + effectiveOffset;
-		return caretOffset;
-	}
+  Offset _getCaretOffset(Offset effectiveOffset, TextPosition textPosition, TextPosition textInputPosition) {
+    final Offset caretOffset =
+        _textPainter.getOffsetForCaret(textPosition, _caretPrototype) + effectiveOffset;
+    return caretOffset;
+  }
 
   /// Returns the position in the text for the given global coordinate.
   ///
@@ -1532,7 +1532,7 @@ class RichRenderEditable extends RenderBox {
     assert(state != null);
     assert(boundedOffset != null);
     assert(lastTextPosition != null);
-		print(['---->', state]);
+    print(['---->', state]);
     if (state == FloatingCursorDragState.Start) {
       _relativeOrigin = const Offset(0, 0);
       _previousOffset = null;
@@ -1638,21 +1638,18 @@ class RichRenderEditable extends RenderBox {
     final Offset effectiveOffset = offset + _paintOffset;
 
     bool showSelection = false;
-		bool showCaret = false;
+    bool showCaret = false;
 
     ///zmt
     var actualSelection =
         handleRichText ? convertTextInputSelectionToTextPainterSelection(text, _selection) : _selection;
 
-		if (actualSelection != null && !_floatingCursorOn) {
-			if (actualSelection.isCollapsed &&
-							_showCursor.value &&
-							cursorColor != null)
-				showCaret = true;
-			else if (!actualSelection.isCollapsed && _selectionColor != null)
-				showSelection = true;
-			_updateSelectionExtentsVisibility(effectiveOffset, actualSelection);
-		}
+    if (actualSelection != null && !_floatingCursorOn) {
+      if (actualSelection.isCollapsed && _showCursor.value && cursorColor != null)
+        showCaret = true;
+      else if (!actualSelection.isCollapsed && _selectionColor != null) showSelection = true;
+      _updateSelectionExtentsVisibility(effectiveOffset, actualSelection);
+    }
     if (showSelection) {
       _selectionRects ??= _textPainter.getBoxesForSelection(actualSelection);
 
@@ -1670,14 +1667,12 @@ class RichRenderEditable extends RenderBox {
           }
         }
       }
-			_paintSelection(context.canvas, effectiveOffset);
+      _paintSelection(context.canvas, effectiveOffset);
     }
 
     ///zmt
-		_paintRichText(context, effectiveOffset);
-		if (showCaret)
-			_paintCaret(context.canvas, effectiveOffset, actualSelection.extent,
-							_selection.extent);
+    _paintRichText(context, effectiveOffset);
+    if (showCaret) _paintCaret(context.canvas, effectiveOffset, actualSelection.extent, _selection.extent);
     // On iOS, the cursor is painted over the text, on Android, it's painted
     // under it.
     if (paintCursorAboveText) _textPainter.paint(context.canvas, effectiveOffset);
@@ -1689,72 +1684,69 @@ class RichRenderEditable extends RenderBox {
     }
   }
 
-	void _paintCaret(Canvas canvas, Offset effectiveOffset,
-									 TextPosition textPosition, TextPosition textInputPosition) {
-		assert(_textLayoutLastWidth == constraints.maxWidth);
+  void _paintCaret(
+      Canvas canvas, Offset effectiveOffset, TextPosition textPosition, TextPosition textInputPosition) {
+    assert(_textLayoutLastWidth == constraints.maxWidth);
 
-		// If the floating cursor is enabled, the text cursor's color is [backgroundCursorColor] while
-		// the floating cursor's color is _cursorColor;
+    // If the floating cursor is enabled, the text cursor's color is [backgroundCursorColor] while
+    // the floating cursor's color is _cursorColor;
 
-		final Paint paint = Paint()
-			..color = _floatingCursorOn ? backgroundCursorColor : _cursorColor;
+    final Paint paint = Paint()..color = _floatingCursorOn ? backgroundCursorColor : _cursorColor;
 
-		final Offset caretOffset =
-		_getCaretOffset(effectiveOffset, textPosition, textInputPosition);
+    final Offset caretOffset = _getCaretOffset(effectiveOffset, textPosition, textInputPosition);
 
-		Rect caretRect = _caretPrototype.shift(caretOffset);
-		if (_cursorOffset != null) caretRect = caretRect.shift(_cursorOffset);
+    Rect caretRect = _caretPrototype.shift(caretOffset);
+    if (_cursorOffset != null) caretRect = caretRect.shift(_cursorOffset);
 
-		///zmt
-		/// 1.5.4-hotfix.2
-		///under lower version of flutter, getFullHeightForCaret is not support
-		///
-		///
-		// Override the height to take the full height of the glyph at the TextPosition
-		// when not on iOS. iOS has special handling that creates a taller caret.
-		// TODO(garyq): See the TODO for _getCaretPrototype.
-		if (defaultTargetPlatform != TargetPlatform.iOS &&
-						_textPainter.getFullHeightForCaret(textPosition, _caretPrototype) !=
-										null) {
-			caretRect = Rect.fromLTWH(
-				caretRect.left,
-				// Offset by _kCaretHeightOffset to counteract the same value added in
-				// _getCaretPrototype. This prevents this from scaling poorly for small
-				// font sizes.
-				caretRect.top - _kCaretHeightOffset,
-				caretRect.width,
-				_textPainter.getFullHeightForCaret(textPosition, _caretPrototype),
-			);
-		}
+    ///zmt
+    /// 1.5.4-hotfix.2
+    ///under lower version of flutter, getFullHeightForCaret is not support
+    ///
+    ///
+    // Override the height to take the full height of the glyph at the TextPosition
+    // when not on iOS. iOS has special handling that creates a taller caret.
+    // TODO(garyq): See the TODO for _getCaretPrototype.
+    if (defaultTargetPlatform != TargetPlatform.iOS &&
+        _textPainter.getFullHeightForCaret(textPosition, _caretPrototype) != null) {
+      caretRect = Rect.fromLTWH(
+        caretRect.left,
+        // Offset by _kCaretHeightOffset to counteract the same value added in
+        // _getCaretPrototype. This prevents this from scaling poorly for small
+        // font sizes.
+        caretRect.top - _kCaretHeightOffset,
+        caretRect.width,
+        _textPainter.getFullHeightForCaret(textPosition, _caretPrototype),
+      );
+    }
 
-		caretRect = caretRect.shift(_getPixelPerfectCursorOffset(caretRect));
+    caretRect = caretRect.shift(_getPixelPerfectCursorOffset(caretRect));
 
-		if (cursorRadius == null) {
-			canvas.drawRect(caretRect, paint);
-		} else {
-			final RRect caretRRect = RRect.fromRectAndRadius(caretRect, cursorRadius);
-			canvas.drawRRect(caretRRect, paint);
-		}
+    if (cursorRadius == null) {
+      canvas.drawRect(caretRect, paint);
+    } else {
+      final RRect caretRRect = RRect.fromRectAndRadius(caretRect, cursorRadius);
+      canvas.drawRRect(caretRRect, paint);
+    }
 
-		if (caretRect != _lastCaretRect) {
-			_lastCaretRect = caretRect;
-			if (onCaretChanged != null) onCaretChanged(caretRect);
-		}
-	}
+    if (caretRect != _lastCaretRect) {
+      _lastCaretRect = caretRect;
+      if (onCaretChanged != null) onCaretChanged(caretRect);
+    }
+  }
 
-	void _paintSelection(Canvas canvas, Offset effectiveOffset) {
-		assert(_textLayoutLastWidth == constraints.maxWidth);
-		assert(_selectionRects != null);
-		final Paint paint = Paint()..color = _selectionColor;
+  void _paintSelection(Canvas canvas, Offset effectiveOffset) {
+    assert(_textLayoutLastWidth == constraints.maxWidth);
+    assert(_selectionRects != null);
+    final Paint paint = Paint()..color = _selectionColor;
 
-		///zmt
-		for (int i = 0; i < _selectionRects.length; i++) {
-			var box = _selectionRects[i];
-			var rect = box.toRect();
+    ///zmt
+    for (int i = 0; i < _selectionRects.length; i++) {
+      var box = _selectionRects[i];
+      var rect = box.toRect();
 
-			canvas.drawRect(rect.shift(effectiveOffset), paint);
-		}
-	}
+      canvas.drawRect(rect.shift(effectiveOffset), paint);
+    }
+  }
 
   Offset _initialOffset;
   @override
@@ -1780,7 +1772,7 @@ class RichRenderEditable extends RenderBox {
 
     ///we have move the canvas, so rect top left should be (0,0)
     final Rect rect = Offset(0.0, 0.0) & size;
-		_paintRichTextChildren(text.children, canvas, rect);
+    _paintRichTextChildren(text.children, canvas, rect);
     canvas.restore();
   }
 

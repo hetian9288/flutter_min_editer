@@ -6,7 +6,6 @@ abstract class RichTextSpanBuilder {
   TextSpan build(
     String data, {
     TextStyle textStyle,
-    TapGestureRecognizer gestureRecognizer,
   }) {
     if (data == null || data == "") return null;
     List<TextSpan> inlineList = new List<TextSpan>();
@@ -29,7 +28,6 @@ abstract class RichTextSpanBuilder {
           specialText = createSpecialText(
             textStack,
             textStyle: textStyle,
-            gestureRecognizer: gestureRecognizer,
             index: i,
           );
           if (specialText != null) {
@@ -59,7 +57,6 @@ abstract class RichTextSpanBuilder {
 	RichTextWidget createSpecialText(
     String flag, {
     TextStyle textStyle,
-    TapGestureRecognizer gestureRecognizer,
     int index,
   });
 
@@ -81,10 +78,8 @@ abstract class RichTextWidget {
   ///TextStyle of SpecialText
   final TextStyle textStyle;
 
-  ///tap call back of SpecialText
-  final TapGestureRecognizer gestureRecognizer;
 
-	RichTextWidget(this.startFlag, this.endFlag, this.textStyle, {this.gestureRecognizer}) : _contetnt = StringBuffer();
+	RichTextWidget(this.startFlag, this.endFlag, this.textStyle) : _contetnt = StringBuffer();
 
   ///finish SpecialText
   TextSpan finishText();

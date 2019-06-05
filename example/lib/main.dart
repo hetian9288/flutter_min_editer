@@ -74,9 +74,23 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               ),
             ],
           ),
-          Text(
-            'Index 1: Business',
-            style: optionStyle,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Form(
+                child: TextFormField(
+                  keyboardType: TextInputType.phone,
+                  style: TextStyle(fontSize: 28),
+                  decoration: InputDecoration(
+                    hintText: "这里输入手机号码",
+                    hintStyle: TextStyle(fontWeight: FontWeight.w200, color: Colors.grey),
+                  ),
+                  validator: (val) {
+                    return RegExp(r'^1\d{10}').hasMatch(val) ? null : "请输入正确的11位手机号码";
+                  },
+                ),
+              )
+            ],
           ),
           Text(
             'Index 2: School',

@@ -202,7 +202,6 @@ TextEditingValue handleRichTextSpanDelete(TextEditingValue value, TextEditingVal
       int difStart = 0;
       //int difEnd = oldText.length - 1;
       for (; difStart < newText.length; difStart++) {
-      	print([oldText[difStart] ,newText[difStart]]);
         if (oldText[difStart] != newText[difStart]) {
           break;
         }

@@ -1427,6 +1427,18 @@ class MinEditableTextState extends State<MinEditableText>
 
     return TextSpan(style: widget.style, text: text);
   }
+
+  @override
+  bool get copyEnabled => true;
+
+  @override
+  bool get cutEnabled => true;
+
+  @override
+  bool get pasteEnabled => true;
+
+  @override
+  bool get selectAllEnabled => true;
 }
 
 class _Editable extends LeafRenderObjectWidget {
