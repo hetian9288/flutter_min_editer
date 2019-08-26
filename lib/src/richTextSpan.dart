@@ -50,7 +50,7 @@ class RichTextSpan extends TextSpan {
   int get hashCode => hashValues(style, text, actualText, start, deleteAll);
 
   @override
-  RenderComparison compareTo(TextSpan other) {
+  RenderComparison compareTo(InlineSpan other) {
     if (other is RichTextSpan) {
       if (other.start != start) {
         return RenderComparison.layout;

@@ -22,6 +22,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: _title,
+      theme: ThemeData(
+        platform: TargetPlatform.iOS,
+      ),
       home: MyStatefulWidget(),
     );
   }

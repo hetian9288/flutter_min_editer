@@ -266,7 +266,6 @@ class RichTextSelectionOverlay {
 			renderObject.localToGlobal(Offset.zero),
 			renderObject.localToGlobal(renderObject.size.bottomRight(Offset.zero)),
 		);
-
 		return FadeTransition(
 			opacity: _toolbarOpacity,
 			child: CompositedTransformFollower(
@@ -276,6 +275,7 @@ class RichTextSelectionOverlay {
 				child: selectionControls.buildToolbar(
 					context,
 					editingRegion,
+					renderObject.preferredLineHeight,
 					midpoint,
 					endpoints,
 					selectionDelegate,
@@ -463,7 +463,7 @@ class _RichTextSelectionHandleOverlayState
 
 		// Make sure the GestureDetector is big enough to be easily interactive.
 		final Rect interactiveRect = handleRect.expandToInclude(
-			Rect.fromCircle(center: handleRect.center, radius: kMinInteractiveSize / 2),
+			Rect.fromCircle(center: handleRect.center, radius: kMinInteractiveDimension / 2),
 		);
 		final RelativeRect padding = RelativeRect.fromLTRB(
 			math.max((interactiveRect.width - handleRect.width) / 2, 0),

@@ -467,9 +467,12 @@ class RichRenderEditable extends RenderBox {
       // We want to put the cursor at the correct location depending on which
       // arrow is used while there is a selection.
       if (!selection.isCollapsed) {
-        if (leftArrow)
+        if (leftArrow){
           newOffset = _baseOffset < _extentOffset ? _baseOffset : _extentOffset;
-        else if (rightArrow) newOffset = _baseOffset > _extentOffset ? _baseOffset : _extentOffset;
+        }
+        else if (rightArrow) {
+          newOffset = _baseOffset > _extentOffset ? _baseOffset : _extentOffset;
+        }
       }
       onSelectionChanged(
         TextSelection.fromPosition(TextPosition(offset: newOffset)),
@@ -1532,7 +1535,6 @@ class RichRenderEditable extends RenderBox {
     assert(state != null);
     assert(boundedOffset != null);
     assert(lastTextPosition != null);
-    print(['---->', state]);
     if (state == FloatingCursorDragState.Start) {
       _relativeOrigin = const Offset(0, 0);
       _previousOffset = null;

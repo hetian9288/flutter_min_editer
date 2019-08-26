@@ -7,7 +7,7 @@ abstract class RichTextSpanBuilder {
     String data, {
     TextStyle textStyle,
   }) {
-    if (data == null || data == "") return null;
+    if (data == null || data == "") return TextSpan(text: "", style: textStyle);
     List<TextSpan> inlineList = new List<TextSpan>();
     if (data.length > 0) {
 			RichTextWidget specialText;
@@ -96,6 +96,10 @@ abstract class RichTextWidget {
 
   ///get content of SpecialText
   String getContent() {
+    if (endFlag.length > 1) {
+      final cont = _contetnt.toString();
+      return cont.substring(0, cont.length - (endFlag.length - 1));
+    }
     return _contetnt.toString();
   }
 

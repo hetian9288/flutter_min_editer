@@ -161,6 +161,7 @@ class RichEditableTextField extends StatefulWidget {
     this.onTap,
     this.buildCounter,
     this.scrollPhysics,
+    this.selectionControls,
     this.richTextSpanBuilder,
   })  : assert(textAlign != null),
         assert(autofocus != null),
@@ -183,6 +184,8 @@ class RichEditableTextField extends StatefulWidget {
         assert(maxLength == null || maxLength == RichEditableTextField.noMaxLength || maxLength > 0),
         keyboardType = keyboardType ?? (maxLines == 1 ? TextInputType.text : TextInputType.multiline),
         super(key: key);
+
+  final TextSelectionControls selectionControls;
 
   ///build your ccustom text span
   final RichTextSpanBuilder richTextSpanBuilder;
@@ -701,41 +704,48 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
 
   void _handleSingleLongTapStart(LongPressStartDetails details) {
     if (widget.selectionEnabled) {
-      switch (Theme.of(context).platform) {
-        case TargetPlatform.iOS:
-          _renderEditable.selectPositionAt(
-            from: details.globalPosition,
-            cause: SelectionChangedCause.longPress,
-          );
-          break;
-        case TargetPlatform.android:
-        case TargetPlatform.fuchsia:
-          _renderEditable.selectWord(cause: SelectionChangedCause.longPress);
-          Feedback.forLongPress(context);
-          break;
-      }
+//      switch (Theme.of(context).platform) {
+//        case TargetPlatform.iOS:
+//          _renderEditable.selectPositionAt(
+//            from: details.globalPosition,
+//            cause: SelectionChangedCause.longPress,
+//          );
+//          break;
+//        case TargetPlatform.android:
+//        case TargetPlatform.fuchsia:
+//          _renderEditable.selectWord(cause: SelectionChangedCause.longPress);
+//          Feedback.forLongPress(context);
+//          break;
+//      }
+      _renderEditable.selectWord(cause: SelectionChangedCause.longPress);
+      Feedback.forLongPress(context);
     }
     _confirmCurrentSplash();
   }
 
   void _handleSingleLongTapMoveUpdate(LongPressMoveUpdateDetails details) {
     if (widget.selectionEnabled) {
-      switch (Theme.of(context).platform) {
-        case TargetPlatform.iOS:
-          _renderEditable.selectPositionAt(
-            from: details.globalPosition,
-            cause: SelectionChangedCause.longPress,
-          );
-          break;
-        case TargetPlatform.android:
-        case TargetPlatform.fuchsia:
-          _renderEditable.selectWordsInRange(
-            from: details.globalPosition - details.offsetFromOrigin,
-            to: details.globalPosition,
-            cause: SelectionChangedCause.longPress,
-          );
-          break;
-      }
+//      switch (Theme.of(context).platform) {
+//        case TargetPlatform.iOS:
+//          _renderEditable.selectPositionAt(
+//            from: details.globalPosition,
+//            cause: SelectionChangedCause.longPress,
+//          );
+//          break;
+//        case TargetPlatform.android:
+//        case TargetPlatform.fuchsia:
+//          _renderEditable.selectWordsInRange(
+//            from: details.globalPosition - details.offsetFromOrigin,
+//            to: details.globalPosition,
+//            cause: SelectionChangedCause.longPress,
+//          );
+//          break;
+//      }
+      _renderEditable.selectWordsInRange(
+        from: details.globalPosition - details.offsetFromOrigin,
+        to: details.globalPosition,
+        cause: SelectionChangedCause.longPress,
+      );
     }
   }
 
@@ -833,33 +843,42 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
     Color cursorColor = widget.cursorColor;
     Radius cursorRadius = widget.cursorRadius;
 
-    switch (themeData.platform) {
-      case TargetPlatform.iOS:
-        forcePressEnabled = true;
-        textSelectionControls = cupertinoTextSelectionControls;
-        paintCursorAboveText = true;
-        cursorOpacityAnimates = true;
-        cursorColor ??= CupertinoTheme.of(context).primaryColor;
-        cursorRadius ??= const Radius.circular(2.0);
-        // An eyeballed value that moves the cursor slightly left of where it is
-        // rendered for text on Android so its positioning more accurately matches the
-        // native iOS text cursor positioning.
-        //
-        // This value is in device pixels, not logical pixels as is typically used
-        // throughout the codebase.
-        const int _iOSHorizontalOffset = -2;
-        cursorOffset = Offset(_iOSHorizontalOffset / MediaQuery.of(context).devicePixelRatio, 0);
-        break;
+    if (widget.selectionControls == null) {
+      switch (themeData.platform) {
+        case TargetPlatform.iOS:
+          forcePressEnabled = true;
+          textSelectionControls = cupertinoTextSelectionControls;
+          paintCursorAboveText = true;
+          cursorOpacityAnimates = true;
+          cursorColor ??= CupertinoTheme.of(context).primaryColor;
+          cursorRadius ??= const Radius.circular(2.0);
+          // An eyeballed value that moves the cursor slightly left of where it is
+          // rendered for text on Android so its positioning more accurately matches the
+          // native iOS text cursor positioning.
+          //
+          // This value is in device pixels, not logical pixels as is typically used
+          // throughout the codebase.
+          const int _iOSHorizontalOffset = -2;
+          cursorOffset = Offset(_iOSHorizontalOffset / MediaQuery.of(context).devicePixelRatio, 0);
+          break;
 
-      case TargetPlatform.android:
-      case TargetPlatform.fuchsia:
-        forcePressEnabled = false;
-        textSelectionControls = materialTextSelectionControls;
-        paintCursorAboveText = false;
-        cursorOpacityAnimates = false;
-        cursorColor ??= themeData.cursorColor;
-        break;
+        case TargetPlatform.android:
+        case TargetPlatform.fuchsia:
+          forcePressEnabled = false;
+          textSelectionControls = materialTextSelectionControls;
+          paintCursorAboveText = false;
+          cursorOpacityAnimates = false;
+          cursorColor ??= themeData.cursorColor;
+          break;
+      }
+    } else {
+      forcePressEnabled = false;
+      textSelectionControls = widget.selectionControls;
+      paintCursorAboveText = false;
+      cursorOpacityAnimates = false;
+      cursorColor ??= themeData.cursorColor;
     }
+
 
     Widget child = RepaintBoundary(
       child: MinEditableText(
