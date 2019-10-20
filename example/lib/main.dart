@@ -45,7 +45,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: "@dasds dasdsa@dasdas ");
+    _controller = TextEditingController(text: "测试 [color=#FF000000 fontSize=12 decoration=1]颜色文字颜色文字颜色文字[/color]");
     _focusNode = FocusNode();
   }
 

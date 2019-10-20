@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_min_editer/flutter_min_editer.dart';
 
-TextPosition convertTextInputPostionToTextPainterPostion(TextSpan text, TextPosition textPosition) {
+TextPosition convertTextInputPostionToTextPainterPostion(
+    TextSpan text, TextPosition textPosition) {
   if (text != null && text.children != null) {
     int caretOffset = textPosition.offset;
     int textOffset = 0;
@@ -21,16 +22,19 @@ TextPosition convertTextInputPostionToTextPainterPostion(TextSpan text, TextPosi
       }
     }
     if (caretOffset != textPosition.offset) {
-      return TextPosition(offset: max(0, caretOffset), affinity: textPosition.affinity);
+      return TextPosition(
+          offset: max(0, caretOffset), affinity: textPosition.affinity);
     }
   }
   return textPosition;
 }
 
-TextSelection convertTextInputSelectionToTextPainterSelection(TextSpan text, TextSelection selection) {
+TextSelection convertTextInputSelectionToTextPainterSelection(
+    TextSpan text, TextSelection selection) {
   if (selection.isValid) {
     if (selection.isCollapsed) {
-      var extent = convertTextInputPostionToTextPainterPostion(text, selection.extent);
+      var extent =
+          convertTextInputPostionToTextPainterPostion(text, selection.extent);
       if (selection.extent != extent) {
         selection = selection.copyWith(
             baseOffset: extent.offset,
@@ -40,9 +44,11 @@ TextSelection convertTextInputSelectionToTextPainterSelection(TextSpan text, Tex
         return selection;
       }
     } else {
-      var extent = convertTextInputPostionToTextPainterPostion(text, selection.extent);
+      var extent =
+          convertTextInputPostionToTextPainterPostion(text, selection.extent);
 
-      var base = convertTextInputPostionToTextPainterPostion(text, selection.base);
+      var base =
+          convertTextInputPostionToTextPainterPostion(text, selection.base);
 
       if (selection.extent != extent || selection.base != base) {
         selection = selection.copyWith(
@@ -58,7 +64,8 @@ TextSelection convertTextInputSelectionToTextPainterSelection(TextSpan text, Tex
   return selection;
 }
 
-TextPosition convertTextPainterPostionToTextInputPostion(TextSpan text, TextPosition textPosition) {
+TextPosition convertTextPainterPostionToTextInputPostion(
+    TextSpan text, TextPosition textPosition) {
   if (text != null && text.children != null && textPosition != null) {
     int caretOffset = textPosition.offset;
     if (caretOffset <= 0) return textPosition;
@@ -68,6 +75,7 @@ TextPosition convertTextPainterPostionToTextInputPostion(TextSpan text, TextPosi
       if (ts is RichTextSpan) {
         var length = ts.actualText.length;
         caretOffset += (length - ts.toPlainText().length);
+        print([ts.start, ts.end]);
 
         ///make sure caret is not in text when caretIn is false
         if (ts.deleteAll && caretOffset > ts.start && caretOffset < ts.end) {
@@ -92,10 +100,12 @@ TextPosition convertTextPainterPostionToTextInputPostion(TextSpan text, TextPosi
   return textPosition;
 }
 
-TextSelection convertTextPainterSelectionToTextInputSelection(TextSpan text, TextSelection selection) {
+TextSelection convertTextPainterSelectionToTextInputSelection(
+    TextSpan text, TextSelection selection) {
   if (selection.isValid) {
     if (selection.isCollapsed) {
-      var extent = convertTextPainterPostionToTextInputPostion(text, selection.extent);
+      var extent =
+          convertTextPainterPostionToTextInputPostion(text, selection.extent);
       if (selection.extent != extent) {
         selection = selection.copyWith(
             baseOffset: extent.offset,
@@ -105,9 +115,11 @@ TextSelection convertTextPainterSelectionToTextInputSelection(TextSpan text, Tex
         return selection;
       }
     } else {
-      var extent = convertTextPainterPostionToTextInputPostion(text, selection.extent);
+      var extent =
+          convertTextPainterPostionToTextInputPostion(text, selection.extent);
 
-      var base = convertTextPainterPostionToTextInputPostion(text, selection.base);
+      var base =
+          convertTextPainterPostionToTextInputPostion(text, selection.base);
 
       if (selection.extent != extent || selection.base != base) {
         selection = selection.copyWith(
@@ -123,7 +135,8 @@ TextSelection convertTextPainterSelectionToTextInputSelection(TextSpan text, Tex
   return selection;
 }
 
-TextPosition makeSureCaretNotInSpecialText(TextSpan text, TextPosition textPosition) {
+TextPosition makeSureCaretNotInSpecialText(
+    TextSpan text, TextPosition textPosition) {
   if (text != null && text.children != null && textPosition != null) {
     int caretOffset = textPosition.offset;
     if (caretOffset <= 0) return textPosition;
@@ -156,8 +169,8 @@ TextPosition makeSureCaretNotInSpecialText(TextSpan text, TextPosition textPosit
 
 ///correct caret Offset
 ///make sure caret is not in text when caretIn is false
-TextEditingValue correctCaretOffset(
-    TextEditingValue value, TextSpan textSpan, TextInputConnection textInputConnection,
+TextEditingValue correctCaretOffset(TextEditingValue value, TextSpan textSpan,
+    TextInputConnection textInputConnection,
     {TextSelection newSelection}) {
   if (textSpan == null || textSpan.children == null) return value;
 
@@ -165,7 +178,8 @@ TextEditingValue correctCaretOffset(
 
   if (selection.isValid && selection.isCollapsed) {
     int caretOffset = selection.extentOffset;
-    var specialTextSpans = textSpan.children.where((x) => x is RichTextSpan && x.deleteAll);
+    var specialTextSpans =
+        textSpan.children.where((x) => x is RichTextSpan && x.deleteAll);
     //correct caret Offset
     //make sure caret is not in text when caretIn is false
     for (RichTextSpan ts in specialTextSpans) {
@@ -182,23 +196,31 @@ TextEditingValue correctCaretOffset(
 
     ///tell textInput caretOffset is changed.
     if (caretOffset != selection.baseOffset) {
-      value =
-          value.copyWith(selection: selection.copyWith(baseOffset: caretOffset, extentOffset: caretOffset));
+      value = value.copyWith(
+          selection: selection.copyWith(
+              baseOffset: caretOffset, extentOffset: caretOffset));
       textInputConnection?.setEditingState(value);
     }
   }
   return value;
 }
 
-TextEditingValue handleRichTextSpanDelete(TextEditingValue value, TextEditingValue oldValue,
-    TextSpan oldTextSpan, TextInputConnection textInputConnection) {
+TextEditingValue handleRichTextSpanDelete(
+    TextEditingValue value,
+    TextEditingValue oldValue,
+    TextSpan oldTextSpan,
+    TextInputConnection textInputConnection) {
   var oldText = oldValue?.text;
   var newText = value?.text;
   if (oldTextSpan != null && oldTextSpan.children != null) {
-    var richSpans = oldTextSpan.children.where((x) => (x is RichTextSpan && x.deleteAll));
+    var richSpans =
+        oldTextSpan.children.where((x) => (x is RichTextSpan && x.deleteAll));
 
     ///take care of image span
-    if (richSpans.length > 0 && oldText != null && newText != null && oldText.length > newText.length) {
+    if (richSpans.length > 0 &&
+        oldText != null &&
+        newText != null &&
+        oldText.length > newText.length) {
       int difStart = 0;
       //int difEnd = oldText.length - 1;
       for (; difStart < newText.length; difStart++) {
@@ -251,5 +273,62 @@ bool hasSpecialText(TextSpan textSpan) {
 
   //for performance, make sure your all RichTextSpan are only in textSpan.children
   //extended_text_field will only check textSpan.children
-  return textSpan.children.firstWhere((x) => x is RichTextSpan, orElse: () => null) != null;
+  return textSpan.children
+          .firstWhere((x) => x is RichTextSpan, orElse: () => null) !=
+      null;
+}
+
+const List<TextDecoration> textDecorationIndex = [
+            TextDecoration.none,
+            TextDecoration.underline,
+            TextDecoration.overline,
+            TextDecoration.lineThrough
+          ];
+
+TextStyle mapToTextStyle(Map<String, String> maps, [TextStyle style]) {
+  if (style == null) {
+    style = TextStyle();
+  }
+  maps.forEach((name, value) {
+    switch (name) {
+      case "color":
+        style = style.copyWith(color: Color(int.parse('0x$value')));
+        break;
+      case "backgroundColor":
+        style = style.copyWith(color: Color(int.parse('0x$value')));
+        break;
+      case "fontSize":
+        style = style.copyWith(fontSize: double.tryParse(value) ?? 14.0);
+        break;
+      case "fontWeight":
+        style = style.copyWith(
+            fontWeight: FontWeight.values[int.tryParse(value) ?? 3]);
+        break;
+      case "letterSpacing":
+        style = style.copyWith(letterSpacing: double.tryParse(value));
+        break;
+      case "wordSpacing":
+        style = style.copyWith(wordSpacing: double.tryParse(value));
+        break;
+      case "decoration":
+        final v = int.tryParse(value);
+        if (v != null) {
+          if (textDecorationIndex[v] != null) {
+            style = style.copyWith(decoration: textDecorationIndex[v]);
+          }
+        }
+        break;
+      case "decorationColor":
+        style = style.copyWith(decorationColor: Color(int.parse('0x$value')));
+        break;
+      case "decorationStyle":
+        final v = int.tryParse(value);
+        if (v != null) {
+          style =
+              style.copyWith(decorationStyle: TextDecorationStyle.values[v]);
+        }
+        break;
+    }
+  });
+  return style;
 }

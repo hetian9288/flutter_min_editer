@@ -64,6 +64,12 @@ abstract class RichTextSpanBuilder {
   bool isStart(String value, String startFlag) {
     return value.endsWith(startFlag);
   }
+
+  /// start with SpecialText
+  Iterable<RegExpMatch> isStartByRegExp(String value, String startFlag) {
+    final r = RegExp(startFlag);
+    return r.allMatches(value);
+  }
 }
 
 abstract class RichTextWidget {
