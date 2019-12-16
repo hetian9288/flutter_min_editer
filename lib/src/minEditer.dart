@@ -1439,6 +1439,16 @@ class MinEditableTextState extends State<MinEditableText>
 
   @override
   bool get selectAllEnabled => true;
+
+  @override
+  void connectionClosed() {
+    if (_hasInputConnection) {
+      _textInputConnection.connectionClosedReceived();
+      _textInputConnection = null;
+      _lastKnownRemoteTextEditingValue = null;
+      _finalizeEditing(true);
+    }
+  }
 }
 
 class _Editable extends LeafRenderObjectWidget {
