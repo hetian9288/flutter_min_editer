@@ -12,6 +12,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui show TextBox, lerpDouble;
 //
 import 'func.dart';
+import 'package:characters/characters.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -99,6 +100,7 @@ class RichRenderEditable extends RenderBox {
     this.onSelectionChanged,
     this.onCaretChanged,
     this.ignorePointer = false,
+    String obscuringCharacter = '•',
     bool obscureText = false,
     Locale locale,
     double cursorWidth = 1.0,
@@ -109,6 +111,8 @@ class RichRenderEditable extends RenderBox {
     bool enableInteractiveSelection,
     EdgeInsets floatingCursorAddedMargin = const EdgeInsets.fromLTRB(4, 4, 4, 5),
     @required this.textSelectionDelegate,
+    TextRange promptRectRange,
+    Color promptRectColor,
     this.supportRichText,
   })  : assert(textAlign != null),
         assert(textDirection != null, 'RenderEditable created without a textDirection.'),
@@ -127,6 +131,7 @@ class RichRenderEditable extends RenderBox {
         assert(offset != null),
         assert(ignorePointer != null),
         assert(paintCursorAboveText != null),
+        assert(obscuringCharacter != null && obscuringCharacter.characters.length == 1),
         assert(obscureText != null),
         assert(textSelectionDelegate != null),
         assert(cursorWidth != null && cursorWidth >= 0.0),
@@ -158,7 +163,9 @@ class RichRenderEditable extends RenderBox {
         _floatingCursorAddedMargin = floatingCursorAddedMargin,
         _enableInteractiveSelection = enableInteractiveSelection,
         _devicePixelRatio = devicePixelRatio,
-        _obscureText = obscureText {
+        _obscuringCharacter = obscuringCharacter,
+        _obscureText = obscureText,
+        _promptRectRange = promptRectRange {
     assert(_showCursor != null);
     assert(!_showCursor.value || cursorColor != null);
     this.hasFocus = hasFocus ?? false;
@@ -166,6 +173,42 @@ class RichRenderEditable extends RenderBox {
       ..onTapDown = _handleTapDown
       ..onTap = _handleTap;
     _longPress = LongPressGestureRecognizer(debugOwner: this)..onLongPress = _handleLongPress;
+    if (promptRectColor != null)
+      _promptRectPaint.color = promptRectColor;
+  }
+
+  /// The color used to paint the prompt rectangle.
+  ///
+  /// The prompt rectangle will only be requested on non-web iOS applications.
+  Color get promptRectColor => _promptRectPaint.color;
+  set promptRectColor(Color newValue) {
+    // Painter.color can not be null.
+    if (newValue == null) {
+      setPromptRectRange(null);
+      return;
+    }
+
+    if (promptRectColor == newValue)
+      return;
+
+    _promptRectPaint.color = newValue;
+    if (_promptRectRange != null)
+      markNeedsPaint();
+  }
+
+  TextRange _promptRectRange;
+  /// Dismisses the currently displayed prompt rectangle and displays a new prompt rectangle
+  /// over [newRange] in the given color [promptRectColor].
+  ///
+  /// The prompt rectangle will only be requested on non-web iOS applications.
+  ///
+  /// When set to null, the currently displayed prompt rectangle (if any) will be dismissed.
+  void setPromptRectRange(TextRange newRange) {
+    if (_promptRectRange == newRange)
+      return;
+
+    _promptRectRange = newRange;
+    markNeedsPaint();
   }
 
   ///whether to support build SpecialText
@@ -175,7 +218,6 @@ class RichRenderEditable extends RenderBox {
   bool get handleRichText => supportRichText && _handleRichText;
 
   /// Character used to obscure text if [obscureText] is true.
-  static const String obscuringCharacter = '•';
 
   /// Called when the selection changes.
   RichSelectionChangedHandler onSelectionChanged;
@@ -201,6 +243,20 @@ class RichRenderEditable extends RenderBox {
     if (devicePixelRatio == value) return;
     _devicePixelRatio = value;
     markNeedsTextLayout();
+  }
+
+  /// Character used for obscuring text if [obscureText] is true.
+  ///
+  /// Cannot be null, and must have a length of exactly one.
+  String get obscuringCharacter => _obscuringCharacter;
+  String _obscuringCharacter;
+  set obscuringCharacter(String value) {
+    if (_obscuringCharacter == value) {
+      return;
+    }
+    assert(value != null && value.characters.length == 1);
+    _obscuringCharacter = value;
+    markNeedsLayout();
   }
 
   /// Whether to hide the text being edited (e.g., for passwords).
@@ -322,9 +378,12 @@ class RichRenderEditable extends RenderBox {
   void _handleKeyEvent(RawKeyEvent keyEvent) {
     // Only handle key events on Android.
     switch (defaultTargetPlatform) {
+      case TargetPlatform.windows:
       case TargetPlatform.android:
+      case TargetPlatform.linux:
         break;
       case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
       case TargetPlatform.fuchsia:
         return;
     }
@@ -1635,6 +1694,24 @@ class RichRenderEditable extends RenderBox {
     return adjustedOffset;
   }
 
+  final Paint _promptRectPaint = Paint();
+  void _paintPromptRectIfNeeded(Canvas canvas, Offset effectiveOffset) {
+    if (_promptRectRange == null || promptRectColor == null) {
+      return;
+    }
+
+    final List<TextBox> boxes = _textPainter.getBoxesForSelection(
+      TextSelection(
+        baseOffset: _promptRectRange.start,
+        extentOffset: _promptRectRange.end,
+      ),
+    );
+
+    for (final TextBox box in boxes) {
+      canvas.drawRect(box.toRect().shift(effectiveOffset), _promptRectPaint);
+    }
+  }
+
   void _paintContents(PaintingContext context, Offset offset) {
     assert(_textLayoutLastWidth == constraints.maxWidth);
     final Offset effectiveOffset = offset + _paintOffset;
@@ -1671,6 +1748,8 @@ class RichRenderEditable extends RenderBox {
       }
       _paintSelection(context.canvas, effectiveOffset);
     }
+
+    _paintPromptRectIfNeeded(context.canvas, effectiveOffset);
 
     ///zmt
     _paintRichText(context, effectiveOffset);

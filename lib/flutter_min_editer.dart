@@ -4,3 +4,4 @@ export 'src/richTextSpanBuilder.dart';
 export 'src/minEditer.dart';
 export 'src/richTextSpan.dart';
 export 'src/richEditableTextField.dart';
+export 'src/func.dart';

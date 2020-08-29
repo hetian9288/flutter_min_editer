@@ -181,8 +181,11 @@ class RichEditableTextField extends StatefulWidget {
           !expands || (maxLines == null && minLines == null),
           'minLines and maxLines must be null when expands is true.',
         ),
-        assert(maxLength == null || maxLength == RichEditableTextField.noMaxLength || maxLength > 0),
-        keyboardType = keyboardType ?? (maxLines == 1 ? TextInputType.text : TextInputType.multiline),
+        assert(maxLength == null ||
+            maxLength == RichEditableTextField.noMaxLength ||
+            maxLength > 0),
+        keyboardType = keyboardType ??
+            (maxLines == 1 ? TextInputType.text : TextInputType.multiline),
         super(key: key);
 
   final TextSelectionControls selectionControls;
@@ -472,68 +475,104 @@ class RichEditableTextField extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<TextEditingController>('controller', controller, defaultValue: null));
-    properties.add(DiagnosticsProperty<FocusNode>('focusNode', focusNode, defaultValue: null));
-    properties.add(DiagnosticsProperty<bool>('enabled', enabled, defaultValue: null));
-    properties.add(DiagnosticsProperty<InputDecoration>('decoration', decoration,
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'controller', controller,
+        defaultValue: null));
+    properties.add(DiagnosticsProperty<FocusNode>('focusNode', focusNode,
+        defaultValue: null));
+    properties
+        .add(DiagnosticsProperty<bool>('enabled', enabled, defaultValue: null));
+    properties.add(DiagnosticsProperty<InputDecoration>(
+        'decoration', decoration,
         defaultValue: const InputDecoration()));
+    properties.add(DiagnosticsProperty<TextInputType>(
+        'keyboardType', keyboardType,
+        defaultValue: TextInputType.text));
     properties.add(
-        DiagnosticsProperty<TextInputType>('keyboardType', keyboardType, defaultValue: TextInputType.text));
-    properties.add(DiagnosticsProperty<TextStyle>('style', style, defaultValue: null));
-    properties.add(DiagnosticsProperty<bool>('autofocus', autofocus, defaultValue: false));
-    properties.add(DiagnosticsProperty<bool>('obscureText', obscureText, defaultValue: false));
-    properties.add(DiagnosticsProperty<bool>('autocorrect', autocorrect, defaultValue: true));
+        DiagnosticsProperty<TextStyle>('style', style, defaultValue: null));
+    properties.add(
+        DiagnosticsProperty<bool>('autofocus', autofocus, defaultValue: false));
+    properties.add(DiagnosticsProperty<bool>('obscureText', obscureText,
+        defaultValue: false));
+    properties.add(DiagnosticsProperty<bool>('autocorrect', autocorrect,
+        defaultValue: true));
     properties.add(IntProperty('maxLines', maxLines, defaultValue: 1));
     properties.add(IntProperty('minLines', minLines, defaultValue: null));
-    properties.add(DiagnosticsProperty<bool>('expands', expands, defaultValue: false));
+    properties.add(
+        DiagnosticsProperty<bool>('expands', expands, defaultValue: false));
     properties.add(IntProperty('maxLength', maxLength, defaultValue: null));
     properties.add(FlagProperty('maxLengthEnforced',
-        value: maxLengthEnforced, defaultValue: true, ifFalse: 'maxLength not enforced'));
-    properties.add(EnumProperty<TextInputAction>('textInputAction', textInputAction, defaultValue: null));
-    properties.add(EnumProperty<TextCapitalization>('textCapitalization', textCapitalization,
+        value: maxLengthEnforced,
+        defaultValue: true,
+        ifFalse: 'maxLength not enforced'));
+    properties.add(EnumProperty<TextInputAction>(
+        'textInputAction', textInputAction,
+        defaultValue: null));
+    properties.add(EnumProperty<TextCapitalization>(
+        'textCapitalization', textCapitalization,
         defaultValue: TextCapitalization.none));
-    properties.add(EnumProperty<TextAlign>('textAlign', textAlign, defaultValue: TextAlign.start));
-    properties.add(EnumProperty<TextDirection>('textDirection', textDirection, defaultValue: null));
-    properties.add(DoubleProperty('cursorWidth', cursorWidth, defaultValue: 2.0));
-    properties.add(DiagnosticsProperty<Radius>('cursorRadius', cursorRadius, defaultValue: null));
-    properties.add(DiagnosticsProperty<Color>('cursorColor', cursorColor, defaultValue: null));
+    properties.add(EnumProperty<TextAlign>('textAlign', textAlign,
+        defaultValue: TextAlign.start));
+    properties.add(EnumProperty<TextDirection>('textDirection', textDirection,
+        defaultValue: null));
     properties
-        .add(DiagnosticsProperty<Brightness>('keyboardAppearance', keyboardAppearance, defaultValue: null));
-    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>('scrollPadding', scrollPadding,
+        .add(DoubleProperty('cursorWidth', cursorWidth, defaultValue: 2.0));
+    properties.add(DiagnosticsProperty<Radius>('cursorRadius', cursorRadius,
+        defaultValue: null));
+    properties.add(DiagnosticsProperty<Color>('cursorColor', cursorColor,
+        defaultValue: null));
+    properties.add(DiagnosticsProperty<Brightness>(
+        'keyboardAppearance', keyboardAppearance,
+        defaultValue: null));
+    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>(
+        'scrollPadding', scrollPadding,
         defaultValue: const EdgeInsets.all(20.0)));
     properties.add(FlagProperty('selectionEnabled',
-        value: selectionEnabled, defaultValue: true, ifFalse: 'selection disabled'));
-    properties.add(DiagnosticsProperty<ScrollPhysics>('scrollPhysics', scrollPhysics, defaultValue: null));
+        value: selectionEnabled,
+        defaultValue: true,
+        ifFalse: 'selection disabled'));
+    properties.add(DiagnosticsProperty<ScrollPhysics>(
+        'scrollPhysics', scrollPhysics,
+        defaultValue: null));
   }
 }
 
-class _RichEditableTextFieldState extends State<RichEditableTextField> with AutomaticKeepAliveClientMixin {
-  final GlobalKey<MinEditableTextState> _editableTextKey = GlobalKey<MinEditableTextState>();
+class _RichEditableTextFieldState extends State<RichEditableTextField>
+    with AutomaticKeepAliveClientMixin {
+  final GlobalKey<MinEditableTextState> _editableTextKey =
+      GlobalKey<MinEditableTextState>();
 
   Set<InteractiveInkFeature> _splashes;
   InteractiveInkFeature _currentSplash;
 
   TextEditingController _controller;
-  TextEditingController get _effectiveController => widget.controller ?? _controller;
+  TextEditingController get _effectiveController =>
+      widget.controller ?? _controller;
 
   FocusNode _focusNode;
-  FocusNode get _effectiveFocusNode => widget.focusNode ?? (_focusNode ??= FocusNode());
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_focusNode ??= FocusNode());
 
   bool get needsCounter =>
-      widget.maxLength != null && widget.decoration != null && widget.decoration.counterText == null;
+      widget.maxLength != null &&
+      widget.decoration != null &&
+      widget.decoration.counterText == null;
 
   InputDecoration _getEffectiveDecoration() {
-    final MaterialLocalizations localizations = MaterialLocalizations.of(context);
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
     final ThemeData themeData = Theme.of(context);
     final InputDecoration effectiveDecoration =
-        (widget.decoration ?? const InputDecoration()).applyDefaults(themeData.inputDecorationTheme).copyWith(
+        (widget.decoration ?? const InputDecoration())
+            .applyDefaults(themeData.inputDecorationTheme)
+            .copyWith(
               enabled: widget.enabled,
               hintMaxLines: widget.decoration?.hintMaxLines ?? widget.maxLines,
             );
 
     // No need to build anything if counter or counterText were given directly.
-    if (effectiveDecoration.counter != null || effectiveDecoration.counterText != null)
-      return effectiveDecoration;
+    if (effectiveDecoration.counter != null ||
+        effectiveDecoration.counterText != null) return effectiveDecoration;
 
     // If buildCounter was provided, use it to generate a counter widget.
     Widget counter;
@@ -555,7 +594,8 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
       return effectiveDecoration.copyWith(counter: counter);
     }
 
-    if (widget.maxLength == null) return effectiveDecoration; // No counter widget
+    if (widget.maxLength == null)
+      return effectiveDecoration; // No counter widget
 
     String counterText = '$currentLength';
     String semanticCounterText = '';
@@ -564,8 +604,10 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
     if (widget.maxLength > 0) {
       // Show the maxLength in the counter
       counterText += '/${widget.maxLength}';
-      final int remaining = (widget.maxLength - currentLength).clamp(0, widget.maxLength);
-      semanticCounterText = localizations.remainingTextFieldCharacterCount(remaining);
+      final int remaining =
+          (widget.maxLength - currentLength).clamp(0, widget.maxLength);
+      semanticCounterText =
+          localizations.remainingTextFieldCharacterCount(remaining);
 
       // Handle length exceeds maxLength
       if (_effectiveController.value.text.runes.length > widget.maxLength) {
@@ -596,9 +638,11 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
     super.didUpdateWidget(oldWidget);
     if (widget.controller == null && oldWidget.controller != null)
       _controller = TextEditingController.fromValue(oldWidget.controller.value);
-    else if (widget.controller != null && oldWidget.controller == null) _controller = null;
+    else if (widget.controller != null && oldWidget.controller == null)
+      _controller = null;
     final bool isEnabled = widget.enabled ?? widget.decoration?.enabled ?? true;
-    final bool wasEnabled = oldWidget.enabled ?? oldWidget.decoration?.enabled ?? true;
+    final bool wasEnabled =
+        oldWidget.enabled ?? oldWidget.decoration?.enabled ?? true;
     if (wasEnabled && !isEnabled) {
       _effectiveFocusNode.unfocus();
     }
@@ -614,11 +658,13 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
     _editableTextKey.currentState?.requestKeyboard();
   }
 
-  void _handleSelectionChanged(TextSelection selection, SelectionChangedCause cause) {
+  void _handleSelectionChanged(
+      TextSelection selection, SelectionChangedCause cause) {
     // iOS cursor doesn't move via a selection handle. The scroll happens
     // directly from new text selection changes.
     switch (Theme.of(context).platform) {
       case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
         if (cause == SelectionChangedCause.longPress) {
           _editableTextKey.currentState?.bringIntoView(selection.base);
         }
@@ -634,7 +680,8 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
     final ThemeData themeData = Theme.of(context);
     final BuildContext editableContext = _editableTextKey.currentContext;
     final RenderBox referenceBox =
-        InputDecorator.containerOf(editableContext) ?? editableContext.findRenderObject();
+        InputDecorator.containerOf(editableContext) ??
+            editableContext.findRenderObject();
     final Offset position = referenceBox.globalToLocal(globalPosition);
 
     final Color color = themeData.splashColor;
@@ -664,7 +711,8 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
     return splash;
   }
 
-	RichRenderEditable get _renderEditable => _editableTextKey.currentState.renderEditable;
+  RichRenderEditable get _renderEditable =>
+      _editableTextKey.currentState.renderEditable;
 
   void _handleTapDown(TapDownDetails details) {
     _renderEditable.handleTapDown(details);
@@ -685,6 +733,7 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
     if (widget.selectionEnabled) {
       switch (Theme.of(context).platform) {
         case TargetPlatform.iOS:
+        case TargetPlatform.macOS:
           _renderEditable.selectWordEdge(cause: SelectionChangedCause.tap);
           break;
         case TargetPlatform.android:
@@ -828,10 +877,12 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
 
     final ThemeData themeData = Theme.of(context);
     final TextStyle style = themeData.textTheme.subhead.merge(widget.style);
-    final Brightness keyboardAppearance = widget.keyboardAppearance ?? themeData.primaryColorBrightness;
+    final Brightness keyboardAppearance =
+        widget.keyboardAppearance ?? themeData.primaryColorBrightness;
     final TextEditingController controller = _effectiveController;
     final FocusNode focusNode = _effectiveFocusNode;
-    final List<TextInputFormatter> formatters = widget.inputFormatters ?? <TextInputFormatter>[];
+    final List<TextInputFormatter> formatters =
+        widget.inputFormatters ?? <TextInputFormatter>[];
     if (widget.maxLength != null && widget.maxLengthEnforced)
       formatters.add(LengthLimitingTextInputFormatter(widget.maxLength));
 
@@ -842,10 +893,12 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
     Offset cursorOffset;
     Color cursorColor = widget.cursorColor;
     Radius cursorRadius = widget.cursorRadius;
+    Color autocorrectionTextRectColor;
 
     if (widget.selectionControls == null) {
       switch (themeData.platform) {
         case TargetPlatform.iOS:
+        case TargetPlatform.macOS:
           forcePressEnabled = true;
           textSelectionControls = cupertinoTextSelectionControls;
           paintCursorAboveText = true;
@@ -859,11 +912,16 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
           // This value is in device pixels, not logical pixels as is typically used
           // throughout the codebase.
           const int _iOSHorizontalOffset = -2;
-          cursorOffset = Offset(_iOSHorizontalOffset / MediaQuery.of(context).devicePixelRatio, 0);
+          cursorOffset = Offset(
+              _iOSHorizontalOffset / MediaQuery.of(context).devicePixelRatio,
+              0);
+          autocorrectionTextRectColor = themeData.textSelectionColor;
           break;
 
         case TargetPlatform.android:
         case TargetPlatform.fuchsia:
+        case TargetPlatform.linux:
+        case TargetPlatform.windows:
           forcePressEnabled = false;
           textSelectionControls = materialTextSelectionControls;
           paintCursorAboveText = false;
@@ -878,7 +936,6 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
       cursorOpacityAnimates = false;
       cursorColor ??= themeData.cursorColor;
     }
-
 
     Widget child = RepaintBoundary(
       child: MinEditableText(
@@ -898,7 +955,8 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
         minLines: widget.minLines,
         expands: widget.expands,
         selectionColor: themeData.textSelectionColor,
-        selectionControls: widget.selectionEnabled ? textSelectionControls : null,
+        selectionControls:
+            widget.selectionEnabled ? textSelectionControls : null,
         onChanged: widget.onChanged,
         onSelectionChanged: _handleSelectionChanged,
         onEditingComplete: widget.onEditingComplete,
@@ -918,6 +976,7 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
         dragStartBehavior: widget.dragStartBehavior,
         scrollPhysics: widget.scrollPhysics,
         richTextSpanBuilder: widget.richTextSpanBuilder,
+        autocorrectionTextRectColor: autocorrectionTextRectColor,
       ),
     );
 
@@ -942,14 +1001,16 @@ class _RichEditableTextFieldState extends State<RichEditableTextField> with Auto
     return Semantics(
       onTap: () {
         if (!_effectiveController.selection.isValid)
-          _effectiveController.selection = TextSelection.collapsed(offset: _effectiveController.text.length);
+          _effectiveController.selection =
+              TextSelection.collapsed(offset: _effectiveController.text.length);
         _requestKeyboard();
       },
       child: IgnorePointer(
         ignoring: !(widget.enabled ?? widget.decoration?.enabled ?? true),
         child: TextSelectionGestureDetector(
           onTapDown: _handleTapDown,
-          onForcePressStart: forcePressEnabled ? _handleForcePressStarted : null,
+          onForcePressStart:
+              forcePressEnabled ? _handleForcePressStarted : null,
           onSingleTapUp: _handleSingleTapUp,
           onSingleTapCancel: _handleSingleTapCancel,
           onSingleLongTapStart: _handleSingleLongTapStart,

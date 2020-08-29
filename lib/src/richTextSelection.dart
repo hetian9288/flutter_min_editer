@@ -67,6 +67,7 @@ class RichTextSelectionOverlay {
 												 this.selectionDelegate,
 												 this.dragStartBehavior = DragStartBehavior.start,
 												 this.onSelectionHandleTapped,
+    this.clipboardStatus,
 											 }) : assert(value != null),
 						assert(context != null),
 						_value = value {
@@ -90,6 +91,13 @@ class RichTextSelectionOverlay {
 	/// The object supplied to the [CompositedTransformTarget] that wraps the text
 	/// field.
 	final LayerLink layerLink;
+
+  /// Maintains the status of the clipboard for determining if its contents can
+  /// be pasted or not.
+  ///
+  /// Useful because the actual value of the clipboard can only be checked
+  /// asynchronously (see [Clipboard.getData]).
+  final ClipboardStatusNotifier clipboardStatus;
 
 	// TODO(mpcomplete): what if the renderObject is removed or replaced, or
 	// moves? Not sure what cases I need to handle, or how to handle them.
@@ -279,6 +287,7 @@ class RichTextSelectionOverlay {
 					midpoint,
 					endpoints,
 					selectionDelegate,
+          clipboardStatus,
 				),
 			),
 		);
